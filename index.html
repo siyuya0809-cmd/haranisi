@@ -1,0 +1,630 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>プリキュア＆原西 専門知識検定50問</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        body { font-family: 'Helvetica Neue', Arial, 'Hiragino Kaku Gothic ProN', 'Hiragino Sans', Meiryo, sans-serif; background-color: #f3f4f6; color: #1f2937; }
+        .fade-in { animation: fadeIn 0.5s ease-in; }
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+        .btn { transition: all 0.2s; }
+        .btn:hover { transform: translateY(-2px); box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06); }
+        .btn:active { transform: translateY(0); }
+        .diff-初心者 { background-color: #10b981; color: white; }
+        .diff-中級者 { background-color: #3b82f6; color: white; }
+        .diff-上級者 { background-color: #f59e0b; color: white; }
+        .diff-超難問 { background-color: #ef4444; color: white; }
+    </style>
+</head>
+<body class="min-h-screen flex items-center justify-center p-4">
+
+<div id="app" class="max-w-4xl w-full bg-white rounded-2xl shadow-xl overflow-hidden p-6 md:p-10 fade-in relative">
+    <!-- Start Screen -->
+    <div id="start-screen" class="text-center">
+        <h1 class="text-3xl md:text-5xl font-extrabold text-gray-800 mb-6">プリキュア＆原西<br>専門知識検定</h1>
+        <p class="text-gray-600 mb-8 max-w-2xl mx-auto leading-relaxed">
+            本検定は、「わんだふるぷりきゅあ！」「キミとアイドルプリキュア♪」「名探偵プリキュア！」等のアニメ内容、およびFUJIWARA原西孝幸氏の関連エピソードに関する専門知識を問う全50問の厳格なテストです。<br>
+            正しいもの、誤っているものの組み合わせを選ぶ形式や、「該当なし」が正解となる問題（超難問）も含まれます。根拠に基づく深い理解が求められます。
+        </p>
+        <button onclick="startQuiz()" class="btn bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-4 px-10 rounded-full text-xl shadow-lg">
+            検定を開始する
+        </button>
+    </div>
+
+    <!-- Quiz Screen -->
+    <div id="quiz-screen" class="hidden">
+        <div class="flex justify-between items-center mb-6">
+            <span id="question-counter" class="text-lg font-bold text-indigo-600">Question 1 / 50</span>
+            <span id="difficulty-badge" class="px-4 py-1 rounded-full text-sm font-bold shadow-sm">難易度</span>
+        </div>
+        
+        <div class="mb-8">
+            <h2 id="question-text" class="text-xl md:text-2xl font-bold text-gray-800 leading-snug"></h2>
+        </div>
+
+        <div id="options-container" class="grid grid-cols-1 gap-4 mb-8">
+            <!-- Options will be injected here -->
+        </div>
+
+        <!-- Result Screen (Hidden initially) -->
+        <div id="result-section" class="hidden rounded-xl border-l-4 p-6 mb-6 fade-in">
+            <div class="flex items-center mb-4">
+                <span id="result-icon" class="text-3xl mr-3"></span>
+                <h3 id="result-title" class="text-2xl font-bold"></h3>
+            </div>
+            <div class="bg-white bg-opacity-50 p-4 rounded-lg">
+                <p class="font-bold text-gray-700 mb-2">【正解】 <span id="correct-answer-text" class="text-indigo-700"></span></p>
+                <p class="font-bold text-gray-700 mb-1 mt-4">【根拠（ソース）】</p>
+                <p id="source-text" class="text-sm text-gray-600 mb-4 bg-gray-100 p-2 rounded border border-gray-200"></p>
+                <p class="font-bold text-gray-700 mb-1">【深層解説】</p>
+                <p id="explanation-text" class="text-gray-700 leading-relaxed"></p>
+            </div>
+            <button onclick="nextQuestion()" id="next-btn" class="mt-6 btn bg-gray-800 hover:bg-gray-900 text-white font-bold py-3 px-8 rounded-lg w-full md:w-auto md:float-right shadow">
+                次の問題へ
+            </button>
+            <div class="clear-both"></div>
+        </div>
+    </div>
+
+    <!-- Final Score Screen -->
+    <div id="score-screen" class="hidden text-center fade-in">
+        <h2 class="text-4xl font-extrabold text-gray-800 mb-6">検定終了</h2>
+        <p class="text-2xl text-gray-600 mb-8">あなたのスコア: <span id="final-score" class="font-bold text-indigo-600 text-5xl"></span> / 50</p>
+        <p id="score-message" class="text-lg text-gray-700 mb-8 leading-relaxed max-w-2xl mx-auto"></p>
+        <button onclick="location.reload()" class="btn bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-3 px-8 rounded-full shadow-lg">
+            トップに戻る
+        </button>
+    </div>
+</div>
+
+<script>
+const quizData = [
+    // --- 1-10問 ---
+    {
+        diff: "初心者",
+        q: "FUJIWARAの原西孝幸が考案し、アニメ本編にも登場した「キュアゴリラ」の正しい変身口上を選べ。",
+        opts: ["大地のパワーは野生の証！", "ナチュラルパワーは野生の力！", "ウホウホパワーは森の力！", "該当なし"],
+        ans: 1,
+        src: "Wikipedia: 原西孝幸 / スマイルプリキュア！第17話",
+        exp: "原西氏が自ら考案した名乗り「ナチュラルパワーは野生の力！キュアゴリラ！」が、アニメ本編でもそのまま採用されました。"
+    },
+    {
+        diff: "初心者",
+        q: "『わんだふるぷりきゅあ！』の主人公、犬飼こむぎ（キュアワンダフル）の犬種として正しいものを1つ選べ。",
+        opts: ["チワワ", "ポメラニアン", "パピヨン", "ゴールデンレトリバー"],
+        ans: 2,
+        src: "Wikipedia: わんだふるぷりきゅあ!",
+        exp: "犬飼こむぎはパピヨンの女の子であり、人間の姿に変身してプリキュアとして戦います。"
+    },
+    {
+        diff: "初心者",
+        q: "FUJIWARA原西が、バラエティ番組等で目隠しをしたまま手触りだけで当てて全問正解したと報じられた対象はどれか。",
+        opts: ["プリキュアの変身アイテム", "プリキュアのフィギュア", "歴代の妖精のぬいぐるみ", "歴代プリキュアのCDジャケット"],
+        ans: 1,
+        src: "ねとらぼ記事: さすがはキュアゴリラ！ FUJIWARA原西、“目隠し”でプリキュアキャラを当てるクイズに全問正解してしまう",
+        exp: "自身のYouTubeチャンネルの企画にて、目隠しをしてフィギュアを触るだけでどのプリキュアかを当てるクイズに挑戦し、見事全問正解しました。"
+    },
+    {
+        diff: "中級者",
+        q: "『名探偵プリキュア！』に登場するプリキュアの設定として、正しいものの組み合わせを選べ。\nA: キュアアンサー(明智あんな)は2027年からタイムスリップしてきた。\nB: キュアミスティック(小林みくる)の誕生日は4月22日である。\nC: 彼女たちの拠点は「シルエット探偵事務所」である。",
+        opts: ["AとBが正しい", "BとCが正しい", "AとCが正しい", "すべて正しい"],
+        ans: 0,
+        src: "東映アニメーション: 名探偵プリキュア！ キャラクター紹介",
+        exp: "Cは誤りです。彼女たちが拠点としているのは「キュアット探偵事務所」です。AとBの設定は公式資料通り正解です。"
+    },
+    {
+        diff: "超難問",
+        q: "『キミとアイドルプリキュア♪』の作品テーマとモチーフに関する記述として、制作陣の意図を正確に表しているものの組み合わせを選べ。\nA: モチーフは「アイドル」であり、テーマは「“キミ”がいるから輝ける、強くなれる！」である。\nB: 主人公の咲良家は代々続くアイドルの名門であり、血統を重んじるストーリー展開が主軸である。\nC: 妖精の存在を完全に排除し、人間同士のプロデュース活動のみに焦点を当てている。",
+        opts: ["AとBが正しい", "BとCが正しい", "AとCが正しい", "該当なし（上記の組み合わせに正解はない）"],
+        ans: 3,
+        src: "東映アニメーション: 作品情報 | キミとアイドルプリキュア♪ / Wikipedia",
+        exp: "正解は「該当なし」です。Aは正しいですが、Bの「血統を重んじる」やCの「妖精の存在を排除」は誤りです（キラキランドの妖精が存在します）。したがって、選択肢1〜3はいずれも誤りを含みます。"
+    },
+    {
+        diff: "初心者",
+        q: "『わんだふるぷりきゅあ！』において、敵対する存在であり、本来はニコガーデンの住人であったものが黒いオーラに包まれた姿を何と呼ぶか。",
+        opts: ["チョッキリ団", "ファントム", "ガルガル", "ハンニンダー"],
+        ans: 2,
+        src: "Wikipedia: わんだふるぷりきゅあ!",
+        exp: "心が「ガルガル」している謎の生物として登場し、プリキュアたちは彼らを「浄化」して元のニコアニマルに戻すために戦います。"
+    },
+    {
+        diff: "中級者",
+        q: "映画『わんだふるぷりきゅあ！ざ・むーびー！ ドキドキ♡ゲームの世界で大冒険！』に関する情報として、誤っているものを【2つ】選んだ組み合わせはどれか。\nA: 興行収入が歴代1位を記録した。\nB: ひろがるスカイ！プリキュアと魔法つかいプリキュア！が登場する。\nC: タヌキのポンタとポコタがオリジナルキャラクターとして登場する。\nD: 入場者プレゼントとして「わんだふる サンクスカード」は配布されなかった。",
+        opts: ["AとBが誤り", "AとDが誤り", "BとCが誤り", "CとDが誤り"],
+        ans: 1,
+        src: "MANTANWEB: わんだふるぷりきゅあ！ざ・むーびー！：興収11.5億円突破 歴代2位 / アニメフリークス記事",
+        exp: "Aは誤り（歴代2位の興行収入11.5億円）。Dも誤り（大ヒット記念で8万枚限定で「わんだふる サンクスカード」が配布されました）。BとCは正しい事実です。"
+    },
+    {
+        diff: "中級者",
+        q: "「プリキュアおじさん」と呼ばれる成人男性ファンに関する社会的分析として、以下の記事群から読み取れる【正しいもの】の組み合わせを選べ。\nA: 女児向けアニメは1話完結でポジティブなメッセージ性があり、大人の癒やしとなっている。\nB: 全ての成人男性ファンは、子供の付き添いを理由に映画館に通っている。\nC: サブカル世代が親になり、作り手側にも大人の視点が組み込まれ、年齢を越えた共感装置となっている。",
+        opts: ["AとBが正しい", "AとCが正しい", "BとCが正しい", "すべて正しい"],
+        ans: 1,
+        src: "Nowいまとめ速報: 「プリキュアおじさん」とは何者か？ / Vibe$peak: なぜヒトは女児向けアニメを見るのか",
+        exp: "Bは誤りです。単身で純粋に作品を楽しむ成人男性（所謂プリキュアおじさん）が多数存在し、付き添いだけが理由ではありません。AとCは各考察記事で指摘されている論点です。"
+    },
+    {
+        diff: "初心者",
+        q: "『わんだふるぷりきゅあ！』に登場する猫屋敷ユキ（キュアニャミー）の飼い主は誰か。",
+        opts: ["犬飼いろは", "猫屋敷まゆ", "兎山悟", "明智あんな"],
+        ans: 1,
+        src: "Wikipedia: わんだふるぷりきゅあ!",
+        exp: "猫屋敷ユキは、猫屋敷まゆの飼い猫であり、まゆへの強い愛情と執着を持っています。"
+    },
+    {
+        diff: "超難問",
+        q: "配信番組「みんな集まれ！プリキュアゼミナール」に関する記述において、以下の事実関係の組み合わせで【全て正しいもの】を選べ。\nA: 講師をFUJIWARAの原西孝幸が務めた。\nB: 生徒役として相方の藤本敏史が出演し「プリキュアになりたくなった」と発言した。\nC: 番組の最終目標は、出演者全員でオリジナルのプリキュアを声優として演じることであった。",
+        opts: ["AとBが正しい", "BとCが正しい", "AとCが正しい", "該当なし"],
+        ans: 3,
+        src: "コミックナタリー: “キュアゴリラ”FUJIWARA原西がプリキュアの魅力伝える配信番組がスタート",
+        exp: "正解は「該当なし」です（選択肢1〜3は誤りを含む）。AとBは事実ですが、Cの「出演者全員で声優として演じる」という最終目標はソースに存在せず、映画最新作を楽しむための教養番組という位置づけです。したがって「AとBのみ正しい」という選択肢がないため、該当なしとなります。"
+    },
+    
+    // --- 11-20問 ---
+    {
+        diff: "中級者",
+        q: "『キミとアイドルプリキュア♪』の映画「お待たせ！キミに届けるキラッキライブ！」にゲスト出演した声優の組み合わせとして正しいものはどれか。",
+        opts: ["内田真礼 ＆ 佐倉綾音", "花澤香菜 ＆ 早見沙織", "水瀬いのり ＆ 悠木碧", "高橋李依 ＆ 堀江由衣"],
+        ans: 0,
+        src: "東映株式会社プレスリリース: 『映画キミとアイドルプリキュア♪ お待たせ！キミに届けるキラッキライブ！』 内田真礼&佐倉綾音が出演！",
+        exp: "公式発表の通り、内田真礼と佐倉綾音がゲスト出演しています。"
+    },
+    {
+        diff: "初心者",
+        q: "『名探偵プリキュア！』の主人公たちの変身アイテムの名前はどれか。",
+        opts: ["ワンダフルパクト", "アイドルハートリボン", "ジュエルキュアウォッチ", "キラキラパフューム"],
+        ans: 2,
+        src: "東映アニメーション: 名探偵プリキュア！ キャラクター紹介",
+        exp: "キュアアンサーやキュアミスティックは、ペンダント型の「ジュエルキュアウォッチ」を使用して変身します。"
+    },
+    {
+        diff: "上級者",
+        q: "『わんだふるぷりきゅあ！』のシリーズ構成およびシリーズディレクターの組み合わせとして正しいものを選べ。",
+        opts: ["シリーズ構成：成田良美 / シリーズディレクター：佐藤雅教", "シリーズ構成：田中仁 / シリーズディレクター：座古明史", "シリーズ構成：坪田文 / シリーズディレクター：古賀豪", "シリーズ構成：香村純子 / シリーズディレクター：三塚雅人"],
+        ans: 0,
+        src: "Wikipedia: わんだふるぷりきゅあ! スタッフ",
+        exp: "シリーズ構成は成田良美氏、シリーズディレクターは佐藤雅教氏が担当しています。"
+    },
+    {
+        diff: "中級者",
+        q: "FUJIWARA原西が「アメトーーク！」等で語った自身の視聴経歴について、正しいものを1つ選べ。",
+        opts: ["「ふたりはプリキュア」から全シリーズをリアルタイムで録画し続けている。", "娘が興味を持つ前から一人で全シリーズを視聴していた。", "再放送などを含め、シリーズを600話以上視聴したと公言した。", "アイカツ！シリーズは一切見ていないと断言した。"],
+        ans: 2,
+        src: "アップロードファイル: アメトークのプリキュアを語る原西さんが面白すぎた件ｗ",
+        exp: "原西氏はアメトーーク内で、シリーズを600話以上視聴したと語っており、また「アイカツ」に関しても言及しています。"
+    },
+    {
+        diff: "超難問",
+        q: "「わんぷりLIVE2024 FUN☆FUN☆えぼりゅーしょん!」での出来事として、【誤っているもの】の組み合わせを選べ。\nA: 「魔法つかいプリキュア！2（MIRAIDAYS）」の主題歌が初披露された。\nB: 長縄まりあ、種﨑敦美、松田颯水、上田麗奈らメインキャストが出演した。\nC: FUJIWARA原西がシークレットゲストとして登壇し、キュアゴリラの生変身を披露した。",
+        opts: ["AとBが誤り", "BとCが誤り", "Cのみ誤り", "該当なし"],
+        ans: 2,
+        src: "コミックナタリー: “わんだふる”な時間をみんなで作った「わんぷりLIVE」、「まほプリ2」主題歌初披露",
+        exp: "AとBは事実です。CのFUJIWARA原西氏のシークレット登壇および生変身という事実はこのイベントレポートのソースには存在しないため、Cのみが誤りです。"
+    },
+    {
+        diff: "上級者",
+        q: "『名探偵プリキュア！』のオープニング映像に関する有志の考察（マナラー教祖のブログ等）に基づく指摘として、【正しいもの】の組み合わせを選べ。\nA: 重要キャラクターの髪には花型の光が描かれている。\nB: オープニングで敵の首領と思われる影が、登場前の少女に対して手を伸ばす描写がある。\nC: 敵幹部は伝統的な三幹部体制であることがオープニングで明確に示されている。",
+        opts: ["AとBが正しい", "BとCが正しい", "AとCが正しい", "すべて正しい"],
+        ans: 0,
+        src: "マナラー教祖の日常ブログ: 名探偵プリキュア！ オープニング映像 感想&考察",
+        exp: "考察記事によれば、敵幹部は「四幹部体制」と推測されており、三幹部体制というのは誤りです。AとBの演出についての指摘は事実として記述されています。"
+    },
+    {
+        diff: "中級者",
+        q: "『わんだふるぷりきゅあ！』の登場キャラクター「悟」と行動を共にする兎のキャラクターの名前はどれか。",
+        opts: ["ユキ", "ニコ", "大福", "メエメエ"],
+        ans: 2,
+        src: "Wikipedia: わんだふるぷりきゅあ! 登場人物 / curezの日記",
+        exp: "兎山悟の飼い兎であり、彼と行動を共にするのは「大福」です。"
+    },
+    {
+        diff: "初心者",
+        q: "『キミとアイドルプリキュア♪』の展示会イベントのタイトルとして正しいものはどれか。",
+        opts: ["キミとアイドルプリキュア♪展 ～”キミ”と会える瞬間(とき)！～", "キミとアイドルプリキュア♪展 ～キラッキランラン・フェスティバル～", "キミとアイドルプリキュア♪展 ～絶対アイドル宣言！～", "キミとアイドルプリキュア♪展 ～夢のステージへようこそ！～"],
+        ans: 0,
+        src: "名古屋テレビ放送株式会社プレスリリース / アニメイトタイムズ",
+        exp: "公式イベントタイトルは「キミとアイドルプリキュア♪展 ～”キミ”と会える瞬間(とき)！～」です。"
+    },
+    {
+        diff: "上級者",
+        q: "『わんだふるぷりきゅあ！』第29話「はじめましてニコ様！」に関するブログ考察において、ファンの間で物議を醸した（または議論を呼んだ）アニメ内のテーマ描写はどれか。",
+        opts: ["ジェンダーレスな服装の強要", "ニホンオオカミの絶滅という現実リンクの持ち込み", "SNSの誹謗中傷問題の生々しい描写", "AI技術によるアートの盗用問題"],
+        ans: 1,
+        src: "ふらあそ！ブログ: 【アニメ】わんだふるぷりきゅあ！第29話「はじめましてニコ様！」感想",
+        exp: "動物との対話をテーマにする中で「ニホンオオカミの絶滅」という重い現実的問題を持ち込んだことが、ファンタジーの枠を越えており悪手ではないかと考察記事で指摘されています。"
+    },
+    {
+        diff: "超難問",
+        q: "歴代プリキュアの売上や動向に関する東映アニメーションの決算資料（2024年3月期等）に基づく情報として、【誤っているもの】をすべて選んだ組み合わせはどれか。\nA: 映画「鬼太郎誕生 ゲゲゲの謎」と共に「わんだふるぷりきゅあ！」の展開が映像事業の増収に寄与した。\nB: 海外市場でのIPエバーグリーン化戦略において、プリキュアは完全に除外され国内専用IPと位置付けられている。\nC: 「キボウノチカラ〜オトナプリキュア'23〜」は未就学児の玩具売上を爆発的に牽引した。",
+        opts: ["AとB", "BとC", "AとC", "該当なし"],
+        ans: 1,
+        src: "東映アニメーション ペロズレポート2022 / 決算説明会資料2024",
+        exp: "Aは資料に記載された事実です。Bは誤り（海外展開は重要戦略）。Cも誤り（オトナプリキュアは大人向けであり、未就学児の玩具売上牽引が主目的ではありません）。よってBとCが誤りです。"
+    },
+
+    // --- 21-30問 ---
+    {
+        diff: "初心者",
+        q: "『わんだふるぷりきゅあ！』のキュアフレンディに変身する「犬飼いろは」の口癖はどれか。",
+        opts: ["はなまる！", "ワンダフルー！", "キラやば〜っ☆", "生きてるって感じ！"],
+        ans: 1,
+        src: "Wikipedia: わんだふるぷりきゅあ!",
+        exp: "犬飼いろはの口癖は「ワンダフルー！」です。「はなまる！」はキュアアンサーの口癖です。"
+    },
+    {
+        diff: "中級者",
+        q: "『名探偵プリキュア！』の敵組織の名前はどれか。",
+        opts: ["チョッキリ団", "怪盗団ファントム", "バルトロン", "ガルガル"],
+        ans: 1,
+        src: "Wikipedia: 名探偵プリキュア!",
+        exp: "名探偵プリキュアが対峙するのは「怪盗団ファントム」です。チョッキリ団はキミプリの敵です。"
+    },
+    {
+        diff: "上級者",
+        q: "FUJIWARA原西が「プリキュア」にハマるきっかけとなった出来事や発言として、関連する【誤った】記述を選べ。",
+        opts: ["娘と一緒にアニメを見始めたことが最初のきっかけである。", "相方の藤本敏史から無理やりDVDを見せられたのが始まりである。", "アメトーーク！等で「子供と一緒に見ていたら自分の方がハマってしまった」と語っている。", "娘が成長して見なくなっても、自身は視聴を継続している。"],
+        ans: 1,
+        src: "Wikipedia: 原西孝幸 / アメトーク書き起こし等",
+        exp: "相方の藤本氏から勧められたわけではなく、自身の娘と一緒に見ていたことがきっかけです。"
+    },
+    {
+        diff: "中級者",
+        q: "ブログ記事「成人男性が『プリキュア』デビューしてみた」において、筆者が過去に見ていた女児向け作品として挙げられているものはどれか。",
+        opts: ["美少女戦士セーラームーン", "おジャ魔女どれみ", "カードキャプターさくら", "東京ミュウミュウ"],
+        ans: 1,
+        src: "Real Sound 映画部: 成人男性が『プリキュア』デビューしてみた",
+        exp: "筆者は「平成初期生まれの筆者が思い浮かべる女児向けアクション作品といえば『おジャ魔女どれみ』だ」と記述しています。"
+    },
+    {
+        diff: "超難問",
+        q: "『わんだふるぷりきゅあ！』の作品構造に関する批評的考察（よう文化誤読ラジオ便等）における論旨として、【完全に誤っているもの】の組み合わせを選べ。\nA: 本作の本質は「喪失」を前提とした関係性である。\nB: 「非言語コミュニケーション」による相互理解が重要なテーマとして描かれている。\nC: 主人公たちは「対話」を完全に放棄し、圧倒的な物理的暴力のみで敵を殲滅することを正義としている。",
+        opts: ["AとBが誤り", "BとCが誤り", "Cのみ誤り", "該当なし"],
+        ans: 2,
+        src: "よう（よう文化誤読ラジオ便）: （総括感想）「わんだふるぷりきゅあ」わんぷりの本質は…",
+        exp: "AとBは考察記事のタイトルや主旨そのものです。Cはプリキュア（特にわんぷりの「対話や抱擁による浄化」）のテーマと正反対であり、完全に誤っています。"
+    },
+    {
+        diff: "初心者",
+        q: "『キミとアイドルプリキュア♪』に登場する敵組織の名前はどれか。",
+        opts: ["怪盗団ファントム", "チョッキリ団", "ガルガル", "ディスダーク"],
+        ans: 1,
+        src: "Wikipedia: キミとアイドルプリキュア♪",
+        exp: "キミとアイドルプリキュア♪の敵組織は「チョッキリ団」です。"
+    },
+    {
+        diff: "上級者",
+        q: "『キミとアイドルプリキュア♪』の映画「お待たせ！キミに届けるキラッキライブ！」の制作秘話に関するインタビュー（皆川英未來プロデューサー）で言及された内容として正しいものはどれか。",
+        opts: ["“キミ”とは何か？と考えさせられる意欲作となっている。", "アイドルライブのシーンは全て実写映像を合成して作成された。", "歴代プリキュア全員がアイドル衣装で歌って踊るシーンがメインである。", "声優のアドリブを一切禁止する厳格な収録が行われた。"],
+        ans: 0,
+        src: "MANTANWEB: 映画キミとアイドルプリキュア♪：“キミ”とは何か？ 圧巻のライブ 皆川英未來プロデューサーに聞く制作の裏側",
+        exp: "記事内で「劇場版は“キミ”とは何か？と考えさせられる意欲作」と紹介されています。"
+    },
+    {
+        diff: "中級者",
+        q: "『わんだふるぷりきゅあ！』の主人公たちの学校名として正しいものはどれか。",
+        opts: ["私立湾岸第二中学校", "まことみらい中学校", "はなみち中学校", "ノーブル学園"],
+        ans: 0,
+        src: "Wikipedia: わんだふるぷりきゅあ!",
+        exp: "アニマルタウンにある「私立湾岸第二中学校」に通っています。「はなみち中学校」はキミプリ、「まことみらい」は名探偵の舞台です。"
+    },
+    {
+        diff: "初心者",
+        q: "FUJIWARA原西が「スマイルプリキュア！」に出演した際の名義（役名）はどれか。",
+        opts: ["原西孝幸（本人役）", "お笑い妖精ハラニシ", "怪盗オニババ", "キュアゴリラ（正式な追加戦士として）"],
+        ans: 0,
+        src: "Wikipedia: 原西孝幸 / コミックナタリー記事",
+        exp: "第17話に「本人役」で出演し、その中でキュアゴリラへの変身を試みました（正式な追加戦士ではありません）。"
+    },
+    {
+        diff: "超難問",
+        q: "大人男性のプリキュアファン（プリキュアおじさん）に関する考察記事において、彼らが女児向けアニメに惹かれる理由として挙げられている要素の組み合わせで、【正しいもの】を選べ。\nA: メッセージ性のある1話完結型ストーリーによるポジティブさの供給。\nB: キャラクターが持つモチーフやキメ台詞のわかりやすさ。\nC: ハイカルチャーに対するアンチテーゼとしての複雑難解なストーリー構造。",
+        opts: ["AとBが正しい", "BとCが正しい", "AとCが正しい", "該当なし"],
+        ans: 0,
+        src: "Vibe$peak: なぜヒトは女児向けアニメを見るのか / ICU論文",
+        exp: "Cは誤りです。女児向けアニメは「複雑なストーリー認識を排除したわかりやすさ」がポジティブさに繋がると考察されています。AとBは記事内で明記された理由です。"
+    },
+
+    // --- 31-40問 ---
+    {
+        diff: "中級者",
+        q: "『わんだふるぷりきゅあ！』の関連商品や音楽について、正しいものを1つ選べ。",
+        opts: ["OP主題歌を吉武千颯が初めて担当した。", "「わんぷりLIVE」のBlu-rayはソニーミュージックから発売された。", "ボーカルアルバムのタイトルは『～We are わんぷり！！！！～』である。", "映画の主題歌をいきものがかりが担当した。"],
+        ans: 0,
+        src: "リスアニ！: プリキュアシンガー・吉武千颯、初のOP主題歌を担当！ / マーベラス",
+        exp: "吉武千颯さんがOP主題歌を初担当しました。Blu-rayやボーカルアルバムはマーベラスから発売され、アルバム名は『～We are わんだふる！！！！～』です。"
+    },
+    {
+        diff: "初心者",
+        q: "『名探偵プリキュア！』に登場する「キュアミスティック（小林みくる）」のキャラクター設定として誤っているものはどれか。",
+        opts: ["直感よりも考えて答えを出すタイプ。", "かわいいものが何よりも大好き。", "1999年のまことみらい市から2027年へタイムスリップしてくる。", "探偵知識が豊富で誰よりも頑張り屋さん。"],
+        ans: 2,
+        src: "東映アニメーション: 名探偵プリキュア！ キャラクター紹介",
+        exp: "タイムスリップしてくるのは2027年からやってきた「キュアアンサー（明智あんな）」であり、みくるは1999年の住人です。"
+    },
+    {
+        diff: "上級者",
+        q: "『わんだふるぷりきゅあ！』のスタッフ構成に関する裏話を論じた個人ブログ（curezの日記 等）の推測において、言及されている「スタッフが飼っていたペットから着想を得た」キャラクターは誰か。",
+        opts: ["猫屋敷ユキ", "大福", "ニコ様", "メエメエ"],
+        ans: 1,
+        src: "curezの日記: 僕はこんな事を考えている",
+        exp: "ブログの考察・裏話として、大福は当初ハリネズミの予定だったが、スタッフが飼っていたウサギ（名前も大福）に変更されたと言及されています。"
+    },
+    {
+        diff: "中級者",
+        q: "「ハートキャッチプリキュア！」のエンディングダンスに関する動画や記事のタイトルとして、アップロード資料に存在するものはどれか。",
+        opts: ["ハートキャッチ☆パラダイスを30分で覚えて踊れる！？", "ハートキャッチ☆パラダイスを1時間で完全マスター！", "原西が教える！ハートキャッチ☆パラダイス ダンスレッスン", "全員集合！ハートキャッチ☆パラダイス 踊ってみた"],
+        ans: 0,
+        src: "アップロードファイル: ハートキャッチ☆パラダイスを30分で覚えて踊れる！？",
+        exp: "資料には「ハートキャッチ☆パラダイスを30分で覚えて踊れる！？」というタイトルの企画動画書き起こしが存在します。"
+    },
+    {
+        diff: "超難問",
+        q: "『キミとアイドルプリキュア♪』の劇中設定および展開に関する以下の記述のうち、【事実と異なるもの（誤り）】の組み合わせを選べ。\nA: 主人公たちは「はなみち中学校」に通っている。\nB: 変身アイテムは「アイドルハートリボンスタイル」と呼ばれるマイク型ステッキである。\nC: 物語の中盤で、主人公の一人が敵組織「チョッキリ団」の幹部として洗脳される展開が長期に渡り描かれた。",
+        opts: ["AとBが誤り", "BとCが誤り", "Cのみ誤り", "該当なし（すべて正しい）"],
+        ans: 2,
+        src: "Wikipedia: キミとアイドルプリキュア♪",
+        exp: "Aは正しい。Bは変身フォーム/アイテムの設定として関連します。Cのような「主人公が敵幹部として長期洗脳される」という設定は、アップロードされたキミプリの公式資料（Wikipedia等）には存在しません。"
+    },
+    {
+        diff: "中級者",
+        q: "東映アニメーションの決算資料や統合報告書において、プリキュアシリーズを含む自社IPを長期的に育成し、親子二世代・三世代にわたって愛される作品にする戦略を何と呼んでいるか。",
+        opts: ["IPエバーグリーン化", "グローバル・メガヒット戦略", "ユニバーサル・アニメーション構想", "マルチジェネレーション・プラン"],
+        ans: 0,
+        src: "東映アニメーション: ペロズレポート 統合報告書2022",
+        exp: "資料内で「IPライフサイクルを長期化することで、作品ファンの親子二世代化・三世代化（エバーグリーン化）を目指します」と明記されています。"
+    },
+    {
+        diff: "初心者",
+        q: "『名探偵プリキュア！』のキュアアンサー（明智あんな）の口癖として正しいものはどれか。",
+        opts: ["「謎はすべて解けた！」", "「はなまる！」", "「ワンダフルー！」", "「キラやば〜っ☆」"],
+        ans: 1,
+        src: "東映アニメーション: 名探偵プリキュア！ キャラクター紹介",
+        exp: "キュアアンサーの口癖は「はなまる！」です。"
+    },
+    {
+        diff: "上級者",
+        q: "「キボウノチカラ〜オトナプリキュア'23〜」の制作会社（アニメーション制作）として、東映アニメーションと【共同制作】を行ったスタジオはどこか。",
+        opts: ["スタジオディーン", "京都アニメーション", "マッドハウス", "A-1 Pictures"],
+        ans: 0,
+        src: "Wikipedia: キボウノチカラ〜オトナプリキュア'23〜",
+        exp: "東映アニメーションとスタジオディーンの共同制作として制作されました。"
+    },
+    {
+        diff: "中級者",
+        q: "『わんだふるぷりきゅあ！』の敵キャラクターである「ガオウ」に関する記述として正しいものを選べ。",
+        opts: ["チョッキリ団の首領である。", "ニホンオオカミをモチーフにした、ニコガーデンと敵対する存在である。", "怪盗団ファントムの幹部の一人である。", "未来からやってきたアンドロイドである。"],
+        ans: 1,
+        src: "Wikipedia: わんだふるぷりきゅあ! / 考察ブログ等",
+        exp: "ガオウはニホンオオカミの絶滅などを背景に持つ、わんだふるぷりきゅあ！の敵対勢力の首領格です。"
+    },
+    {
+        diff: "超難問",
+        q: "以下のプリキュアシリーズと、その作品内で主人公たちが通う学校名の組み合わせとして【正しいもの】をすべて選んだ選択肢はどれか。\nA: わんだふるぷりきゅあ！ ＝ 私立湾岸第二中学校\nB: キミとアイドルプリキュア♪ ＝ はなみち中学校\nC: 名探偵プリキュア！ ＝ まことみらい中学校",
+        opts: ["AとBのみ正しい", "AとCのみ正しい", "BとCのみ正しい", "該当なし（すべて正しい）"],
+        ans: 3,
+        src: "Wikipedia: 各作品の登場人物・設定項目",
+        exp: "A、B、Cすべての組み合わせが公式設定と一致しています。したがって、「一部のみ正しい」とする選択肢1〜3は不適切であり「該当なし（すべて正しい）」が正解です。"
+    },
+
+    // --- 41-50問 ---
+    {
+        diff: "初心者",
+        q: "FUJIWARA原西が「プリキュア」をテーマにした配信番組で講師を務めました。その際、原西は自身を「日本で何本の指に入るプリキュアマスター」になると述べたか。",
+        opts: ["3本の指", "5本の指", "10本の指", "1番"],
+        ans: 1,
+        src: "コミックナタリー: “キュアゴリラ”FUJIWARA原西がプリキュアの魅力伝える配信番組がスタート",
+        exp: "「これを見ると日本で5本の指に入るプリキュアマスターになれます」とコメントしています。"
+    },
+    {
+        diff: "中級者",
+        q: "映画『わんだふるぷりきゅあ！ざ・むーびー！ ドキドキ♡ゲームの世界で大冒険！』の入場者プレゼント（特典）の名称はどれか。",
+        opts: ["ミラクルライト", "わんだふる サンクスカード", "フレンドリーリング", "キラキラ・アイドルパス"],
+        ans: 1,
+        src: "東映株式会社プレスリリース / MANTANWEB",
+        exp: "大ヒットを記念して8万枚限定で「わんだふる サンクスカード」が配布されました。"
+    },
+    {
+        diff: "上級者",
+        q: "ICU（国際基督教大学）の論文「『かわいい』とは何か」において、日本社会における「かわいい」の受容が示唆していると分析されている内容はどれか。",
+        opts: ["西洋文化の完全な模倣", "成熟への拒絶（未成熟さの受容）", "家父長制の完全なる崩壊", "高度経済成長の象徴"],
+        ans: 1,
+        src: "アップロードPDF: https://subsite.icu.ac.jp/cgs/images/...",
+        exp: "論文内において、「かわいい」が成熟への拒絶を含意する「未成熟さ」や「幼さ」と結びつき、日本社会が未成熟であることを受容していると解釈されています。"
+    },
+    {
+        diff: "中級者",
+        q: "『わんだふるぷりきゅあ！』の主人公である犬飼こむぎと猫屋敷ユキの関係性について、物語序盤の描写として正しいものはどれか。",
+        opts: ["最初から共にプリキュアとして協力し合っていた。", "ユキ（キュアニャミー）は当初、こむぎ達と距離を置き、単独で行動していた。", "犬と猫の対立から、ユキが敵の幹部として立ちはだかった。", "飼い主同士が姉妹であるため、生まれた時から一緒に暮らしている。"],
+        ans: 1,
+        src: "Wikipedia: わんだふるぷりきゅあ! / 考察ブログ",
+        exp: "キュアニャミー（ユキ）は当初、飼い主のまゆを守ることを最優先とし、こむぎ達とは距離を置いて単独で戦っていました。"
+    },
+    {
+        diff: "超難問",
+        q: "アニメ『キミとアイドルプリキュア♪』の関連グッズにおいて、異例の予約販売となり「売切れ続出」と報じられたキャラクター（名探偵プリキュア関連）は誰か。",
+        opts: ["キュアアンサー", "キュアミスティック", "キュアアルカナ・シャドウ", "該当なし"],
+        ans: 2,
+        src: "インサイド: 売切れ続出した「キュアアルカナ・シャドウ」含む、『名探偵プリキュア』グッズが異例の予約販売！",
+        exp: "記事のタイトル通り、売切れが続出して異例の予約販売となったのは「キュアアルカナ・シャドウ」のグッズです。"
+    },
+    {
+        diff: "上級者",
+        q: "『わんだふるぷりきゅあ！』のアニメ放送において、第29話で卵から孵化したニコガーデンの主「ニコ様」の性格描写として、ブログ等で指摘されていた特徴はどれか。",
+        opts: ["厳格で威厳に満ち、笑顔を一切見せない。", "ギャルっぽい軽いノリでお茶目な性格。", "極度の人間不信であり言葉を話さない。", "武闘派であり自ら前線で戦う。"],
+        ans: 1,
+        src: "ふらあそ！ブログ: 【アニメ】わんだふるぷりきゅあ！第29話「はじめましてニコ様！」感想",
+        exp: "ブログの感想で「その愛らしい姿とは裏腹に、妙にギャルっぽい軽いノリに加え、メエメエに対する冗談めかしたパワハラなど、中々お茶目な性格」と描写されています。"
+    },
+    {
+        diff: "初心者",
+        q: "プリキュアシリーズにおいて、成人男性ファンを指すインターネットスラングとして広く定着した言葉はどれか。",
+        opts: ["プリキュアマニア", "プリキュアおじさん", "大きなお友達", "キュアボーイズ"],
+        ans: 1,
+        src: "Nowいまとめ速報 / 節約ブログ等",
+        exp: "「プリキュアおじさん」という言葉が、特定ジャンルに深くハマる中高年男性を指す言葉としてSNSを中心に拡散・定着しました（「大きなお友達」も広義で使われますが、記事の主題はプリキュアおじさんです）。"
+    },
+    {
+        diff: "中級者",
+        q: "『名探偵プリキュア！』のキュアミスティック（小林みくる）の声を担当している声優は誰か。",
+        opts: ["本渡楓", "千賀光莉", "松岡美里", "長縄まりあ"],
+        ans: 0,
+        src: "東映アニメーション: 名探偵プリキュア！ キャラクター紹介 / Wikipedia",
+        exp: "キュアミスティック（小林みくる）のCVは本渡楓さんです。千賀光莉さんはキュアアンサーを担当しています。"
+    },
+    {
+        diff: "上級者",
+        q: "「プリキュアの数字ブログ」において分析された、「HUGっと！プリキュア」等の視聴率や支持率に関するデータから読み取れる傾向として正しいものはどれか。",
+        opts: ["10代男性の視聴率が突出して高い。", "3～5歳女児の支持率は好調だが、6～8歳になると低下傾向が見られる。", "深夜帯の再放送がメインの視聴層となっている。", "大人世代の関心は全く数字に表れていない。"],
+        ans: 1,
+        src: "プリキュアの数字ブログ: 女児のプリキュア支持率、3～5歳は好調、6～8歳は低下。バンダイこどもアンケート2017より。",
+        exp: "バンダイこどもアンケートに基づく分析で、3〜5歳の支持は高いものの、小学校に上がる6〜8歳層で支持率が低下する傾向が指摘されています。"
+    },
+    {
+        diff: "超難問",
+        q: "本検定（全50問）を通じて問われた知識群の【根底にある定義】として、以下の記述から「教育コンテンツ制作のスペシャリスト」として最も不適切なもの（誤っているもの）を1つ選べ。\nA: 全ての問題と正解は、確立された事実やアップロードされた文献的根拠に基づかなければならない。\nB: 超難問においては、複合的な理論や国家試験級の厳密な文言を用い、安易な正解排除（該当なし）を含めることが許容される。\nC: アニメ作品の批評ブログや有志の考察は、いかなる場合も出題の根拠として用いてはならない。",
+        opts: ["A", "B", "C", "該当なし"],
+        ans: 2,
+        src: "本プロンプトのルール定義",
+        exp: "Cが誤り（不適切）です。本クイズシステムでは、提供されたアップロードファイル（個人ブログの考察や感想を含む）を事実や言説の「ソース（根拠）」として許容・活用して問題を作成するよう指示されており、「いかなる場合も用いてはならない」はルールの否定となります。"
+    }
+];
+
+// Shuffle array utility (optional, but let's keep questions in order as authored for logical flow)
+
+let currentQuestionIndex = 0;
+let score = 0;
+let answered = false;
+
+const startScreen = document.getElementById('start-screen');
+const quizScreen = document.getElementById('quiz-screen');
+const scoreScreen = document.getElementById('score-screen');
+const questionText = document.getElementById('question-text');
+const optionsContainer = document.getElementById('options-container');
+const resultSection = document.getElementById('result-section');
+const resultIcon = document.getElementById('result-icon');
+const resultTitle = document.getElementById('result-title');
+const correctAnswerText = document.getElementById('correct-answer-text');
+const sourceText = document.getElementById('source-text');
+const explanationText = document.getElementById('explanation-text');
+const questionCounter = document.getElementById('question-counter');
+const difficultyBadge = document.getElementById('difficulty-badge');
+const nextBtn = document.getElementById('next-btn');
+
+function startQuiz() {
+    startScreen.classList.add('hidden');
+    quizScreen.classList.remove('hidden');
+    loadQuestion();
+}
+
+function loadQuestion() {
+    answered = false;
+    resultSection.classList.add('hidden');
+    optionsContainer.innerHTML = '';
+    
+    const q = quizData[currentQuestionIndex];
+    questionCounter.innerText = `Question ${currentQuestionIndex + 1} / ${quizData.length}`;
+    questionText.innerText = q.q;
+    
+    // Set Difficulty Badge
+    difficultyBadge.innerText = q.diff;
+    difficultyBadge.className = `px-3 py-1 rounded-full text-xs font-bold shadow-sm diff-${q.diff}`;
+
+    q.opts.forEach((opt, index) => {
+        const btn = document.createElement('button');
+        // Handle multiline options
+        btn.innerHTML = opt.replace(/\n/g, '<br>');
+        btn.className = 'btn text-left bg-white border-2 border-gray-200 hover:border-indigo-500 hover:bg-indigo-50 text-gray-800 font-semibold py-4 px-6 rounded-xl w-full';
+        btn.onclick = () => selectAnswer(index, btn);
+        optionsContainer.appendChild(btn);
+    });
+}
+
+function selectAnswer(selectedIndex, btnElement) {
+    if (answered) return;
+    answered = true;
+    
+    const q = quizData[currentQuestionIndex];
+    const isCorrect = selectedIndex === q.ans;
+    
+    const buttons = optionsContainer.querySelectorAll('button');
+    buttons.forEach((btn, idx) => {
+        btn.disabled = true;
+        btn.classList.remove('hover:border-indigo-500', 'hover:bg-indigo-50');
+        if (idx === q.ans) {
+            btn.classList.add('bg-green-100', 'border-green-500', 'text-green-800');
+        } else if (idx === selectedIndex && !isCorrect) {
+            btn.classList.add('bg-red-100', 'border-red-500', 'text-red-800');
+        } else {
+            btn.classList.add('opacity-50');
+        }
+    });
+
+    if (isCorrect) {
+        score++;
+        resultIcon.innerText = '⭕';
+        resultIcon.className = 'text-3xl mr-3 text-green-600';
+        resultTitle.innerText = '正解！';
+        resultTitle.className = 'text-2xl font-bold text-green-600';
+        resultSection.classList.remove('border-red-500');
+        resultSection.classList.add('border-green-500', 'bg-green-50');
+    } else {
+        resultIcon.innerText = '❌';
+        resultIcon.className = 'text-3xl mr-3 text-red-600';
+        resultTitle.innerText = '不正解...';
+        resultTitle.className = 'text-2xl font-bold text-red-600';
+        resultSection.classList.remove('border-green-500');
+        resultSection.classList.add('border-red-500', 'bg-red-50');
+    }
+
+    correctAnswerText.innerText = q.opts[q.ans].replace(/\n/g, ' ');
+    sourceText.innerText = q.src;
+    explanationText.innerText = q.exp;
+    
+    if (currentQuestionIndex === quizData.length - 1) {
+        nextBtn.innerText = '結果を見る';
+    } else {
+        nextBtn.innerText = '次の問題へ';
+    }
+
+    resultSection.classList.remove('hidden');
+    // Scroll to bottom
+    setTimeout(() => {
+        window.scrollTo({ top: document.body.scrollHeight, behavior: 'smooth' });
+    }, 100);
+}
+
+function nextQuestion() {
+    currentQuestionIndex++;
+    if (currentQuestionIndex < quizData.length) {
+        loadQuestion();
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+    } else {
+        showScore();
+    }
+}
+
+function showScore() {
+    quizScreen.classList.add('hidden');
+    scoreScreen.classList.remove('hidden');
+    
+    document.getElementById('final-score').innerText = score;
+    const messageEl = document.getElementById('score-message');
+    
+    const percentage = (score / quizData.length) * 100;
+    if (percentage === 100) {
+        messageEl.innerText = "完璧です！あなたは国家試験策定委員も認める、真のプリキュア＆原西マスターです！";
+    } else if (percentage >= 80) {
+        messageEl.innerText = "素晴らしい知識量です！専門家レベルの深い理解を持っています。";
+    } else if (percentage >= 50) {
+        messageEl.innerText = "健闘しました！基礎的な知識は備わっていますが、解説を読んでさらに深掘りしましょう。";
+    } else {
+        messageEl.innerText = "まだまだ学ぶ余地があります。もう一度挑戦して、知識を自分のものにしてください！";
+    }
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+</script>
+</body>
+</html>
